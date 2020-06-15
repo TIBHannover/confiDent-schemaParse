@@ -1,0 +1,49 @@
+import urllib.request
+from lxml import etree
+from pprint import pprint
+from typing import Dict
+
+datacite_schema_uri = 'https://schema.datacite.org/meta/kernel-4.3/metadata.xsd'
+XMLSchema = 'http://www.w3.org/2001/XMLSchema'
+
+
+def fetch_rdf(uri: str, contenttype: str) -> str:
+    request_headers = {'Accept': contenttype}
+    request = urllib.request.Request(uri, headers=request_headers)
+    response = urllib.request.urlopen(request)
+    data = response.read()
+    return data
+
+
+def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
+    datacite_els_dict = {}
+    tree = etree.fromstring(xmlcode)
+
+    ## if reading fromfile, use:
+    # tree = etree.parse(xml_file_path)
+    # root = tree.getroot()
+    # & replace tree-> root
+
+    # element(s) of  <xs:element name="resource">
+    resource = tree.find('.//xs:element[@name="resource"]',
+                         namespaces={'xs': xs_uri})
+
+    for el in resource.findall('./xs:complexType/xs:all/xs:element',
+                               namespaces={'xs': xs_uri}):
+
+        # ... should try to gather more info about each element/property
+
+        documentation = ''
+        for doc in el.findall('.//xs:annotation/xs:documentation',
+                              namespaces={'xs': xs_uri}):
+            documentation += doc.text
+        datacite_els_dict[el.get('name')] = {'documentation': documentation}
+    return datacite_els_dict
+
+
+schema_xml = fetch_rdf(uri=datacite_schema_uri,
+                       contenttype='application/rdf+xml')
+
+datacite_elements = dataciteSchema2dict(xmlcode=schema_xml, xs_uri=XMLSchema)
+print(datacite_elements.keys())
+pprint(datacite_elements)
