@@ -1,10 +1,20 @@
+from pathlib import Path
 import urllib.request
 from lxml import etree
 from pprint import pprint
 from typing import Dict
+from jinja2 import (FileSystemLoader,
+                    Environment)
 
 datacite_schema_uri = 'https://schema.datacite.org/meta/kernel-4.3/metadata.xsd'
 XMLSchema = 'http://www.w3.org/2001/XMLSchema'
+
+# Jinja: Env & Templates
+project_dir = Path(__file__).parent.absolute()
+f_loader = FileSystemLoader(project_dir / 'templates')
+env = Environment(loader=f_loader)
+datacite_properties_template = env.get_template('DataCite_properties.jinja')
+
 
 
 def fetch_rdf(uri: str, contenttype: str) -> str:
@@ -45,5 +55,10 @@ schema_xml = fetch_rdf(uri=datacite_schema_uri,
                        contenttype='application/rdf+xml')
 
 datacite_elements = dataciteSchema2dict(xmlcode=schema_xml, xs_uri=XMLSchema)
-print(datacite_elements.keys())
-pprint(datacite_elements)
+# print(datacite_elements.keys())
+# pprint(datacite_elements)
+
+datacite_smw = datacite_properties_template.render(
+    elements_dict=datacite_elements)
+datacite_smw = datacite_smw.replace('\n\n', '') # remove empty lines
+print(datacite_smw)

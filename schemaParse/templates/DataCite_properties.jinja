@@ -1,0 +1,14 @@
+{% for element in elements_dict %}
+{# Note the user of curly brance with literal curlibrace is the way Jinja escapes its metacharacter #}
+{{ '{{' }}SchemaProperty
+|id=DataCite::{{ element|lower }}
+|name={{ element|title }}
+|kind=Entity
+|type=XSD:complexType
+|cardinality=1
+|definition={{ elements_dict[ element ]['documentation'] }}
+|schema=DataCite
+|storemode=subobject
+{{ '}}' }}
+{% endfor %}
+
