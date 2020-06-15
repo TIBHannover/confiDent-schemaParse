@@ -1,0 +1,4 @@
+# pycharm (IDE) dir
+.idea/
+venv/
+.ipynb_checkpoints
