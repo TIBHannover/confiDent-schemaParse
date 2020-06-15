@@ -34,10 +34,28 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
     # root = tree.getroot()
     # & replace tree-> root
 
-    # element(s) of  <xs:element name="resource">
+    # TODO: use orderDict
+
+    # resource (entity)
     resource = tree.find('.//xs:element[@name="resource"]',
                          namespaces={'xs': xs_uri})
+    for tag in resource.findall('./'):  # direct child elements, no sub-sub els
+        if 'Type' in tag.tag:
+            _type = tag.tag
+            _type = _type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
+    documentation = ''
+    for doc in resource.findall('.//xs:annotation/xs:documentation',
+                                namespaces={'xs': xs_uri}):
+        documentation += doc.text
+    datacite_els_dict[resource.get('name')] = {
+        'name': resource.get('name'),
+        'type': _type,
+        'kind': 'Entity',
+        'cardinality': 1, # TODO: Philip logic
+        'definition': documentation
+    }
 
+    # properties
     for el in resource.findall('./xs:complexType/xs:all/xs:element',
                                namespaces={'xs': xs_uri}):
 
@@ -47,7 +65,7 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
         for doc in el.findall('.//xs:annotation/xs:documentation',
                               namespaces={'xs': xs_uri}):
             documentation += doc.text
-        datacite_els_dict[el.get('name')] = {'documentation': documentation}
+        datacite_els_dict[el.get('name')] = {'annotation': documentation}
     return datacite_els_dict
 
 
@@ -58,7 +76,7 @@ datacite_elements = dataciteSchema2dict(xmlcode=schema_xml, xs_uri=XMLSchema)
 # print(datacite_elements.keys())
 pprint(datacite_elements)
 
-datacite_smw = datacite_properties_template.render(
-    elements_dict=datacite_elements)
-datacite_smw = datacite_smw.replace('\n\n', '') # remove empty lines
-print(datacite_smw)
+# datacite_smw = datacite_properties_template.render(
+#     elements_dict=datacite_elements)
+# datacite_smw = datacite_smw.replace('\n\n', '') # remove empty lines
+# print(datacite_smw)

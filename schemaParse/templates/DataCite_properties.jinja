@@ -1,12 +1,20 @@
+=CiteSchema=
+{{ '{{' }}CiteSchema
+|name=DataCite
+|type=XSD
+|storemode=property
+{{ '}}' }}
+=properties=
+
 {% for element in elements_dict %}
 {# Note the user of curly brance with literal curlibrace is the way Jinja escapes its metacharacter #}
 {{ '{{' }}SchemaProperty
-|id=DataCite::{{ element|lower }}
-|name={{ element|title }}
-|kind=Property
-|type=XSD:complexType
-|cardinality=1
-|definition={{ elements_dict[ element ]['documentation'] }}
+|id=DataCite::{{ elements_dict[ element ]['name']|lower }}
+|name={{ elements_dict[ element ]['name']|title }}
+|kind={{ elements_dict[ element ]['kind'] }}
+|type=XSD:{{ elements_dict[ element ]['type'] }}
+|cardinality={{ elements_dict[ element ]['cardinality'] }}
+|definition={{ elements_dict[ element ]['definition'] }}
 |schema=DataCite
 |storemode=subobject
 {{ '}}' }}
