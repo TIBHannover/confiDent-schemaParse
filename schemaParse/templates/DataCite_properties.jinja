@@ -4,8 +4,9 @@
 |type=XSD
 |storemode=property
 {{ '}}' }}
-=properties=
 
+
+=properties=
 {% for element in elements_dict %}
 {# Note the user of curly brance with literal curlibrace is the way Jinja escapes its metacharacter #}
 {{ '{{' }}SchemaProperty
@@ -19,9 +20,6 @@
 |storemode=subobject
 {{ '}}' }}
 {% endfor %}
-
-
-
 {# USE THIS
 {{SchemaProperty
 |id=DataCite::identifier

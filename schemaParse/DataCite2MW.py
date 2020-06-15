@@ -3,6 +3,7 @@ import urllib.request
 from lxml import etree
 from pprint import pprint
 from typing import Dict
+from collections import OrderedDict
 from jinja2 import (FileSystemLoader,
                     Environment)
 
@@ -26,7 +27,7 @@ def fetch_schema(uri: str, contenttype: str) -> str:
 
 
 def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
-    datacite_els_dict = {}
+    datacite_els_dict = OrderedDict()
     tree = etree.fromstring(xmlcode)
 
     ## if reading fromfile, use:
@@ -47,6 +48,7 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
     for doc in resource.findall('.//xs:annotation/xs:documentation',
                                 namespaces={'xs': xs_uri}):
         documentation += doc.text
+    documentation = documentation.replace('\n\n', '')  # remove empty lines
     datacite_els_dict[resource.get('name')] = {
         'name': resource.get('name'),
         'type': _type,
@@ -65,6 +67,7 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
         for doc in el.findall('.//xs:annotation/xs:documentation',
                               namespaces={'xs': xs_uri}):
             documentation += doc.text
+        documentation = documentation.replace('\n\n', '') # remove empty lines
         datacite_els_dict[el.get('name')] = {'annotation': documentation}
     return datacite_els_dict
 
@@ -74,9 +77,10 @@ schema_xml = fetch_schema(uri=datacite_schema_uri,
 
 datacite_elements = dataciteSchema2dict(xmlcode=schema_xml, xs_uri=XMLSchema)
 # print(datacite_elements.keys())
-pprint(datacite_elements)
+# pprint(datacite_elements)
 
-# datacite_smw = datacite_properties_template.render(
-#     elements_dict=datacite_elements)
-# datacite_smw = datacite_smw.replace('\n\n', '') # remove empty lines
-# print(datacite_smw)
+datacite_smw = datacite_properties_template.render(
+    elements_dict=datacite_elements
+)
+
+print(datacite_smw)
