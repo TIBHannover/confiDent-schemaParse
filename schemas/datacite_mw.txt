@@ -17,6 +17,8 @@
 |schema=DataCite
 |storemode=subobject
 }}
+
+
 {{SchemaProperty
 |id=DataCite::identifier
 |name=Identifier
@@ -31,6 +33,7 @@
 |schema=DataCite
 |storemode=subobject
 }}
+
 {{SchemaProperty
 |id=DataCite::title
 |name=Title

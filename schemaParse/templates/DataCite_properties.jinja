@@ -3,7 +3,7 @@
 {{ '{{' }}SchemaProperty
 |id=DataCite::{{ element|lower }}
 |name={{ element|title }}
-|kind=Entity
+|kind=Property
 |type=XSD:complexType
 |cardinality=1
 |definition={{ elements_dict[ element ]['documentation'] }}
@@ -12,3 +12,30 @@
 {{ '}}' }}
 {% endfor %}
 
+
+
+{# USE THIS
+{{SchemaProperty
+|id=DataCite::identifier
+|name=Identifier
+|kind=Property  ---> infer kind form nesting levet :////
+|type=XSD:complexType --> tag name
+|parent=     --> ???? (save for later)
+|cardinality=1   ->> 1  .. needs clarification
+      minOccurs="0" maxOccurs="unbounded"
+
+|mapsTo=ConfIDentSchema/EventId
+    TODO: schema mapping through YAML file.
+    TODO: Phillip will do a dictionary mapping
+
+|definition=A persistent identifier that identifies a resource.
+            Documentation
+|allowedValue=DOI (Digital Object Identifier) registered by a DataCite member. Format should be “10.1234/foo”
+    keep empty for now
+|examples=10.1234/foo
+    keep empty for now
+|schema=DataCite
+|storemode=subobject
+    Forms templates related (keep as is)
+}}
+#}
