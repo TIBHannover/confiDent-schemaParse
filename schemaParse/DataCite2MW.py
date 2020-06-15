@@ -17,7 +17,7 @@ datacite_properties_template = env.get_template('DataCite_properties.jinja')
 
 
 
-def fetch_rdf(uri: str, contenttype: str) -> str:
+def fetch_schema(uri: str, contenttype: str) -> str:
     request_headers = {'Accept': contenttype}
     request = urllib.request.Request(uri, headers=request_headers)
     response = urllib.request.urlopen(request)
@@ -51,12 +51,12 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
     return datacite_els_dict
 
 
-schema_xml = fetch_rdf(uri=datacite_schema_uri,
-                       contenttype='application/rdf+xml')
+schema_xml = fetch_schema(uri=datacite_schema_uri,
+                          contenttype='application/rdf+xml')
 
 datacite_elements = dataciteSchema2dict(xmlcode=schema_xml, xs_uri=XMLSchema)
 # print(datacite_elements.keys())
-# pprint(datacite_elements)
+pprint(datacite_elements)
 
 datacite_smw = datacite_properties_template.render(
     elements_dict=datacite_elements)
