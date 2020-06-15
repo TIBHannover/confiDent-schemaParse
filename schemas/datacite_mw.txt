@@ -1,0 +1,81 @@
+=CiteSchema=
+
+{{CiteSchema
+|name=DataCite
+|type=XSD
+|storemode=property
+}}
+=properties=
+
+{{SchemaProperty
+|id=DataCite::resource
+|name=Resource
+|kind=Entity
+|type=XSD:complexType
+|cardinality=1
+|definition=Root element of a single record. This wrapper element is for XML implementation only and is not defined in the DataCite DOI standard. Note: This is the case for all wrapper elements within this schema.
+|schema=DataCite
+|storemode=subobject
+}}
+{{SchemaProperty
+|id=DataCite::identifier
+|name=Identifier
+|kind=Property
+|type=XSD:complexType
+|parent=
+|cardinality=1
+|mapsTo=ConfIDentSchema/EventId
+|definition=A persistent identifier that identifies a resource.
+|allowedValue=DOI (Digital Object Identifier) registered by a DataCite member. Format should be “10.1234/foo”
+|examples=10.1234/foo
+|schema=DataCite
+|storemode=subobject
+}}
+{{SchemaProperty
+|id=DataCite::title
+|name=Title
+|kind=Property
+|cardinality=1-n
+|mapsTo=ConfIDentSchema/EventName
+|definition=A name or title by which a resource is known. May be the title of a dataset or the name of a piece of software.
+|schema=DataCite
+|storemode=subobject
+}}
+{{SchemaProperty
+|id=DataCite::identifierType
+|name=identifierType
+|kind=SubProperty
+|cardinality=1
+|definition=The type of Identifier.
+|comment=''Controlled List Value:''
+|allowedValue=DOI
+|schema=DataCite
+|storemode=subobject
+}}
+{{SchemaProperty
+|id=DataCite::creator
+|name=Creator
+|kind=Property
+|type=XSD:complexType
+|cardinality=1-n
+|definition=The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.
+Personal names can be further specified using givenName and familyName. Format: Family, Given.
+Note: DataCite infrastructure supports up to 8000-10000 names. For name lists above that size, consider attribution via linking to the related metadata.
+|schema=DataCite
+|storemode=subobject
+}}
+{{SchemaProperty
+|id=DataCite::creatorName
+|name=creatorName
+|kind=SubProperty
+|cardinality=1
+|definition=The full name of the creator.
+|comment=Note: The personal name, format should be: family, given. Non-roman names may be transliterated according to the ALA-LC schemas
+|examples=Charpy, Antoine; Jemison, Mae; Foo Data Center
+|schema=DataCite
+|storemode=subobject
+}}
+=Freitext=
+https://datacite.org/
+
+The DataCite Ontology - https://sparontologies.github.io/datacite/current/datacite.html (uses old metadata properties of the DataCite Metadata Kernel Specification version 3.1)
