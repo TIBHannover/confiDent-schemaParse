@@ -35,8 +35,6 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
     # root = tree.getroot()
     # & replace tree-> root
 
-    # TODO: use orderDict
-
     # resource (entity)
     resource = tree.find('.//xs:element[@name="resource"]',
                          namespaces={'xs': xs_uri})
@@ -53,22 +51,32 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
         'name': resource.get('name'),
         'type': _type,
         'kind': 'Entity',
-        'cardinality': 1, # TODO: Philip logic
+        'cardinality': 1,  # TODO: Philip logic
         'definition': documentation
     }
 
     # properties
     for el in resource.findall('./xs:complexType/xs:all/xs:element',
                                namespaces={'xs': xs_uri}):
-
-        # ... should try to gather more info about each element/property
+        for tag in resource.findall('./'):  # direct child elements
+            if 'Type' in tag.tag:
+                _type = tag.tag
+                _type = _type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
 
         documentation = ''
         for doc in el.findall('.//xs:annotation/xs:documentation',
                               namespaces={'xs': xs_uri}):
             documentation += doc.text
         documentation = documentation.replace('\n\n', '') # remove empty lines
-        datacite_els_dict[el.get('name')] = {'annotation': documentation}
+        datacite_els_dict[el.get('name')] = {
+            'name': el.get('name'),
+            'type': _type,
+            'kind': 'Property',
+            'cardinality': 1, # TODO: Philip logic
+            'definition': documentation,
+            'allowedValue': '',
+            'examples': ''
+    }
     return datacite_els_dict
 
 
