@@ -3,6 +3,8 @@
 ## run
 `python schemaParse/DataCite2MW.py`
 
+run without debug mode: `python -O schemaParse/DataCite2MW.py`
+
 ## TODO
 * make template more general purpose 
     * How similar in DC MW template to other Schemas templates?
