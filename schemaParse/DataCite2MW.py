@@ -26,6 +26,27 @@ def fetch_schema(uri: str, contenttype: str) -> str:
     return data
 
 
+def parse_resource(tree, resource_root_xpath: str, ns: dict) -> (str,Dict):
+    resource = tree.find(resource_root_xpath,
+                         namespaces=ns)
+    for tag in resource.findall('./'):  # direct child elements, no sub-sub els
+        if 'Type' in tag.tag:
+            _type = tag.tag
+            _type = _type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
+    documentation = ''
+    for doc in resource.findall('.//xs:annotation/xs:documentation',
+                                namespaces=ns):
+        documentation += doc.text
+    documentation = documentation.replace('\n\n', '')  # remove empty lines
+    resource_dict = {resource.get('name'): {
+        'name': resource.get('name'),
+        'type': _type,
+        'kind': 'Entity',
+        'cardinality': 1,  # TODO: Philip logic
+        'definition': documentation
+    }}
+    return resource, resource_dict
+
 def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
     datacite_els_dict = OrderedDict()
     tree = etree.fromstring(xmlcode)
@@ -36,24 +57,12 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
     # & replace tree-> root
 
     # resource (entity)
-    resource = tree.find('.//xs:element[@name="resource"]',
-                         namespaces={'xs': xs_uri})
-    for tag in resource.findall('./'):  # direct child elements, no sub-sub els
-        if 'Type' in tag.tag:
-            _type = tag.tag
-            _type = _type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
-    documentation = ''
-    for doc in resource.findall('.//xs:annotation/xs:documentation',
-                                namespaces={'xs': xs_uri}):
-        documentation += doc.text
-    documentation = documentation.replace('\n\n', '')  # remove empty lines
-    datacite_els_dict[resource.get('name')] = {
-        'name': resource.get('name'),
-        'type': _type,
-        'kind': 'Entity',
-        'cardinality': 1,  # TODO: Philip logic
-        'definition': documentation
-    }
+    resource, resource_dict = parse_resource(
+        tree=tree,
+        resource_root_xpath='.//xs:element[@name="resource"]',
+        ns={'xs': xs_uri}
+    )
+    datacite_els_dict.update(resource_dict)
 
     # properties
     for prop in resource.findall('./xs:complexType/xs:all/xs:element',
