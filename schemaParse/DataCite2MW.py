@@ -57,21 +57,31 @@ def dataciteSchema2dict(xmlcode: str, xs_uri: str) -> Dict:
 
     # properties
     for prop in resource.findall('./xs:complexType/xs:all/xs:element',
-                               namespaces={'xs': xs_uri}):
+                                  namespaces={'xs': xs_uri}):
         for tag in resource.findall('./'):  # direct child elements
             if 'Type' in tag.tag:
                 prop_type = tag.tag
                 prop_type = prop_type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
 
-
+        # prop name: if plural seek single element
+        #   note that filtering according to .endswith('s') is failable
+        #   but seems to work for DataCite
+        # TODO TEST: all properies have "|name=" value
+        if prop.get('name').endswith('s'):
+            prop_single = prop.find('./xs:complexType/xs:sequence/xs:element',
+                                    namespaces={'xs': xs_uri})
+            prop_name = prop_single.get('name')
+        else:
+            prop_name = prop.get('name')
 
         documentation = ''
         for doc in prop.findall('.//xs:annotation/xs:documentation',
                               namespaces={'xs': xs_uri}):
             documentation += doc.text
         documentation = documentation.replace('\n\n', '') # remove empty lines
+
         datacite_els_dict[prop.get('name')] = {
-            'name': prop.get('name'),
+            'name': prop_name,
             'type': prop_type,
             'kind': 'Property',
             'cardinality': 1, # TODO: Philip logic
