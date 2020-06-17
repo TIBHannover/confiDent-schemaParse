@@ -1,5 +1,8 @@
 # Parse schemas and integrate onto SMW
 
+# current schemas:
+* [Datacide](https://schema.datacite.org/meta/kernel-4.3/) (work in progress)
+
 ## run
 `python schemaParse/DataCite2MW.py`
 
