@@ -83,7 +83,12 @@ def property_type(tree, prop_el):
     elif simple_or_sequence == 'sequence':
         prop_el_squnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
                                       namespaces=ns)
-
+        prop_name = prop_el_squnce.get('name')
+        sub_properties = prop_el_squnce.findall(
+            './xs:complexType/xs:sequence/xs:element', namespaces=ns)
+        for sub in sub_properties:
+            sub_prop_name = sub.get('name')
+            print(f'SUB {sub_prop_name}')
     else:
         prop_name = prop_el.get('name')
 
