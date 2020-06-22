@@ -14,6 +14,28 @@
 * example (for later)
 
 # Notes
+## Cardinality
+cardinality/quantity constraints for the properties as follows:
+* 0-n = optional and repeatable  `(empty)`
+* 0-1 = optional, but not repeatable `maxOccurs = 1`
+* 1-n = required and repeatable   `minOccurs=1 & maxOccurs="unbounded"`
+* 1 = required, but not repeatable   `minOccurs=1 & maxOccurs=1`
+
+TODO: review defaults
+
+What do in cases such as ```
+                    <xs:element name="creatorName">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="nameType" type="nameType" use="optional"/>
+                            <xs:attribute ref="xml:lang"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+```
+
 ## on Destinguishing between properties and sub properties
 
 Types in DataCite XML:

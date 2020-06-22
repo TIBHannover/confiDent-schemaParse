@@ -80,10 +80,13 @@ def get_subproperty(subprop) -> (str, dict):
     else:
         prop_type = 'simpleType'
 
+    cardi = get_cardinality(el=subprop)
+
     prop_dict = fill_prop_dict(name=sub_prop_name,
                                _type=prop_type,
                                kind='SubProperty',
-                               doc=''  # subProps do not seem to have document.
+                               doc='',  # subProps do not seem to have document.
+                               cardi=cardi
                                )
     return sub_prop_name, prop_dict
 
@@ -165,7 +168,7 @@ def parse_prop_n_subp(tree, prop_el) -> dict:
             subprop_name, subprop_vals_dict = get_subproperty(subprop=sub)
             subprop_dict = {subprop_name: subprop_vals_dict}
             prop_n_subprop_dict.update(subprop_dict)
-    # pprint(prop_n_subprop_dict)
+    pprint(prop_n_subprop_dict)
     return prop_n_subprop_dict
 
 
