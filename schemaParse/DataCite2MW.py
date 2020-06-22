@@ -26,10 +26,10 @@ def fetch_schema(uri: str, contenttype: str) -> str:
     return data
 
 
-def get_documentation(parent_el, doc_xpath: str):
+def get_documentation(el, doc_xpath: str):
     documentation = ''
-    for doc in parent_el.findall(doc_xpath,
-                                namespaces=ns):
+    for doc in el.findall(doc_xpath,
+                          namespaces=ns):
         documentation += doc.text
     documentation = documentation.replace('\n\n', '')  # remove empty lines
     return documentation
@@ -43,7 +43,7 @@ def parse_resource(tree, resource_root_xpath: str) -> (str,Dict):
             _type = tag.tag
             _type = _type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
     documentation = get_documentation(
-        parent_el=resource,
+        el=resource,
         doc_xpath='.//xs:annotation/xs:documentation')
 
     resource_dict = {resource.get('name'): {
@@ -54,6 +54,23 @@ def parse_resource(tree, resource_root_xpath: str) -> (str,Dict):
         'definition': documentation
     }}
     return resource, resource_dict
+
+
+def get_cardinality(el) -> str:
+    # when omitted Occurs defaults to 1
+    minOccurs = el.get('minOccurs') if el.get('minOccurs') else "1"
+    maxOccurs = el.get('maxOccurs') if el.get('maxOccurs') else "1"
+    if minOccurs == "1" and maxOccurs == "1":
+        cardinality = "1"  # required, non-repeatable
+    elif minOccurs == "1" and maxOccurs == "unbounded":
+        cardinality = "1-n"  # required, repeatable
+    elif minOccurs == "0" and maxOccurs == "1":
+        cardinality = "0-1"  # optional, non-repeatable
+    elif minOccurs == "0" and maxOccurs == "unbounded":
+        cardinality = "0-n"  # optional, repeatable
+    print(f"min:{minOccurs} max:{maxOccurs}")
+    print(f"cardinality:{cardinality}")
+    return cardinality
 
 
 def get_subproperty(subprop) -> (str, dict):
@@ -81,6 +98,7 @@ def get_property(tree, prop_el: str) -> (str, dict):
     Returns (propety_name, prop_dict)
 
     '''
+    prop_el_squnce = None
     if prop_el.find('./xs:complexType/xs:sequence', namespaces=ns) is not None:
         prop_type = 'complexType'
         prop_el_squnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
@@ -100,13 +118,18 @@ def get_property(tree, prop_el: str) -> (str, dict):
         prop_type = 'simpleType'
         prop_name = prop_el.get('name')
 
-    doc = get_documentation(parent_el=prop_el,
+    doc = get_documentation(el=prop_el,
                             doc_xpath='.//xs:annotation/xs:documentation')
+    if prop_el_squnce: # element with sequence
+        cardi = get_cardinality(el=prop_el_squnce)
+    else:
+        cardi = get_cardinality(el=prop_el)
 
     prop_dict = fill_prop_dict(name=prop_name,
                                _type=prop_type,
                                kind='Property',
-                               doc=doc)
+                               doc=doc,
+                               cardi=cardi)
     # pprint(name_type_dict)
     if __debug__ and prop_dict.get('name') not in prop_el.get("name"):
         print('Error: {} is not in {}'.format(
