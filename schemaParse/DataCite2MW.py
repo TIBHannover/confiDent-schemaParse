@@ -57,29 +57,34 @@ def parse_resource(tree, resource_root_xpath: str) -> (str,Dict):
 
 
 def property_type(tree, prop_el):
-    '''Does this property sequence OR simpleContent this property hold? Ff:
+    '''
+    Identifies if property is sequence OR simpleContent
+    Returns:
+        proporty name,
+        subproperties(?)
+
+    If:
     * simpleContent: get property name from prop_el
     * sequence: get property name get prop_el/complexType/sequence/element
 
-    Sub properties
+    Sub properties:
      *
     '''
 
     complexType_child = prop_el.find('./xs:complexType/*', namespaces=ns)
-    # TODO: understand why publicationYear, language, version do not have
-    #  child of ./xs:complexType/
+
+
+    # simpleContent or sequence ?
     simple_or_sequence = complexType_child.tag if complexType_child is not \
                                                  None else 'None'
     simple_or_sequence = simple_or_sequence.replace(XMLSchema, "")\
         .replace('{','').replace('}','') # remove ns
 
-    print(f'Parent TAG:{prop_el.get("name")}',
-          f'TYPE:{simple_or_sequence}'
-          )
+    print(f'\nParent TAG:{prop_el.get("name")}',
+          f'TYPE:{simple_or_sequence}')
 
     if simple_or_sequence == 'simpleContent':
         prop_name = prop_el.get('name')
-
     elif simple_or_sequence == 'sequence':
         prop_el_squnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
                                       namespaces=ns)
@@ -90,7 +95,10 @@ def property_type(tree, prop_el):
             sub_prop_name = sub.get('name')
             print(f'SUB {sub_prop_name}')
     else:
+        # TODO: understand why publicationYear, language, version are neither
+        #  simpleContent or sequence
         prop_name = prop_el.get('name')
+        print('NOT simpleContent or sequence', prop_name)
 
     if __debug__:
         if prop_name not in prop_el.get("name"):
