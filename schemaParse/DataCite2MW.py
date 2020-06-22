@@ -57,9 +57,8 @@ def parse_resource(tree, resource_root_xpath: str) -> (str,Dict):
 
 
 def get_cardinality(el) -> str:
-    # when omitted Occurs defaults to 1
-    minOccurs = el.get('minOccurs') if el.get('minOccurs') else "1"
-    maxOccurs = el.get('maxOccurs') if el.get('maxOccurs') else "1"
+    minOccurs = el.get('minOccurs')
+    maxOccurs = el.get('maxOccurs')
     if minOccurs == "1" and maxOccurs == "1":
         cardinality = "1"  # required, non-repeatable
     elif minOccurs == "1" and maxOccurs == "unbounded":
@@ -68,8 +67,13 @@ def get_cardinality(el) -> str:
         cardinality = "0-1"  # optional, non-repeatable
     elif minOccurs == "0" and maxOccurs == "unbounded":
         cardinality = "0-n"  # optional, repeatable
-    print(f"min:{minOccurs} max:{maxOccurs}")
-    print(f"cardinality:{cardinality}")
+    elif maxOccurs == "unbounded":  # absent minOccurs -> default: 1
+        cardinality = "1-n"  # required, repeatable
+    else:  # absent minOccurs maxOccurs -> default(both): 1
+        cardinality = "1"  # required, non-repeatable
+
+    # print(f"min:{minOccurs} max:{maxOccurs}")
+    # print(f"cardinality:{cardinality}")
     return cardinality
 
 

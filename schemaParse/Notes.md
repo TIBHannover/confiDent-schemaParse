@@ -14,6 +14,20 @@
 * example (for later)
 
 # Notes
+## modifiers: sub sub property:
+* 2.4.a: nameIdentifierScheme
+* 2.4.b: schemeURL
+* 2.5.a: affiliationIdentifier
+* 2.5.b: affiliationIdentifierScheme
+* 2.5.c: SchemeURI
+* 3.1.a: titleType
+* 7.4.a: nameIdentifierScheme
+* 7.4.b: schemeURI
+* 7.5.a: affiliationIdentifier
+* 7.5.b: affiliationIdentifierScheme
+* 7.5.c: SchemeURI
+* 18.1.1: pointLongitude
+
 ## Cardinality
 cardinality/quantity constraints for the properties as follows:
 * 0-n = optional and repeatable  `(empty)`
