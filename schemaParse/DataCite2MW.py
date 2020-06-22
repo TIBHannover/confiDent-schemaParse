@@ -127,7 +127,7 @@ def get_property(tree, prop_el: str) -> (str, dict):
 
     doc = get_documentation(el=prop_el,
                             doc_xpath='.//xs:annotation/xs:documentation')
-    if prop_el_squnce: # element with sequence
+    if prop_el_squnce is not None:  # element with sequence
         cardi = get_cardinality(el=prop_el_squnce)
     else:
         cardi = get_cardinality(el=prop_el)
@@ -167,12 +167,12 @@ def parse_prop_n_subp(tree, prop_el) -> dict:
     subprop_xpath = './xs:complexType/xs:sequence/xs:element/xs' \
                        ':complexType/xs:sequence/xs:element'
     if prop_dict['type'] == 'complexType' and \
-            prop_el.find(subprop_xpath, namespaces=ns):
+            prop_el.find(subprop_xpath, namespaces=ns) is not None:
         for sub in prop_el.findall(subprop_xpath, namespaces=ns):
             subprop_name, subprop_vals_dict = get_subproperty(subprop=sub)
             subprop_dict = {subprop_name: subprop_vals_dict}
             prop_n_subprop_dict.update(subprop_dict)
-    pprint(prop_n_subprop_dict)
+    # pprint(prop_n_subprop_dict)
     return prop_n_subprop_dict
 
 
