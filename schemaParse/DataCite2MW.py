@@ -56,62 +56,69 @@ def parse_resource(tree, resource_root_xpath: str) -> (str,Dict):
     return resource, resource_dict
 
 
-def property_type(tree, prop_el):
+def property_nameNtype(tree, prop_el) -> dict:
     '''
-    Identifies if property is sequence OR simpleContent
-    Returns:
-        proporty name,
-        subproperties(?)
-
-    If:
-    * simpleContent: get property name from prop_el
-    * sequence: get property name get prop_el/complexType/sequence/element
-
-    Sub properties:
-     *
+    Identifies property attributes:
+    * property name
+    * complexType OR simpleType
+        * complexType: simpleContent sequence or
+     sequence OR simpleContent
+    Returns dict:
+        prop: {
+        name:
+        type: complexType OR simpleType,
+        complexType: simpleContent or sequence or (None for simpleType)
+                        }
     '''
 
-    complexType_child = prop_el.find('./xs:complexType/*', namespaces=ns)
-
-
-    # simpleContent or sequence ?
-    simple_or_sequence = complexType_child.tag if complexType_child is not \
-                                                 None else 'None'
-    simple_or_sequence = simple_or_sequence.replace(XMLSchema, "")\
-        .replace('{','').replace('}','') # remove ns
-
-    print(f'\nParent TAG:{prop_el.get("name")}',
-          f'TYPE:{simple_or_sequence}')
-
-    if simple_or_sequence == 'simpleContent':
-        prop_name = prop_el.get('name')
-    elif simple_or_sequence == 'sequence':
+    if prop_el.find('./xs:complexType/xs:sequence', namespaces=ns) is not None:
+        prop_type = 'complexType'
+        prop_complexType = 'sequence'
         prop_el_squnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
                                       namespaces=ns)
         prop_name = prop_el_squnce.get('name')
-        sub_properties = prop_el_squnce.findall(
-            './xs:complexType/xs:sequence/xs:element', namespaces=ns)
-        for sub in sub_properties:
-            sub_prop_name = sub.get('name')
-            print(f'SUB {sub_prop_name}')
-    else:
-        # TODO: understand why publicationYear, language, version are neither
-        #  simpleContent or sequence
+    elif prop_el.find('./xs:complexType/xs:simpleContent',
+                      namespaces=ns) is not None:
+        prop_type = 'complexType'
+        prop_complexType = 'simpleContent'
         prop_name = prop_el.get('name')
-        print('NOT simpleContent or sequence', prop_name)
+    elif prop_el.find('./xs:simpleType',
+                      namespaces=ns) is not None:
+        prop_type = 'simpleType'
+        prop_complexType = None
+        prop_name = prop_el.get('name')
+    else:
+        # properties language & version have NO complexType or simpleType
+        # I will assume they are simpleType ヽ༼ຈل͜ຈ༽ﾉ
+        prop_type = 'simpleType'
+        prop_complexType = None
+        prop_name = prop_el.get('name')
 
+    prop_dict = {'type': prop_type,
+                 'complexType': prop_complexType,
+                 'name': prop_name
+                }
+    pprint(prop_dict)
     if __debug__:
-        if prop_name not in prop_el.get("name"):
+        if prop_dict.get('name') not in prop_el.get("name"):
             print(f'Error: {prop_name} is not in {prop_el.get("name")}')
             raise AssertionError
+    return prop_dict
 
-    print(f'PROPNAME: {prop_name}')
-    return prop_name
-        # None
 
+    # # REUSE THIS IN SEQUENCE SUB ELEMENTs
+    # elif simple_or_sequence == 'sequence':
+    #     prop_el_squnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
+    #                                   namespaces=ns)
+    #     prop_name = prop_el_squnce.get('name')
+    #     sub_properties = prop_el_squnce.findall(
+    #         './xs:complexType/xs:sequence/xs:element', namespaces=ns)
+    #     for sub in sub_properties:
+    #         sub_prop_name = sub.get('name')
+    #         print(f'SUB {sub_prop_name}')
 
 def parse_properties(tree, prop_el) -> Dict:
-    prop_name = property_type(tree, prop_el)
+    prop_dict = property_nameNtype(tree, prop_el)
 
     for tag in tree.findall('./'):  # direct child elements
         # TODO: review Type
@@ -121,14 +128,13 @@ def parse_properties(tree, prop_el) -> Dict:
         else:
             prop_type = ''
 
-
     documentation = get_documentation(
         parent_el=prop_el,
         doc_xpath='.//xs:annotation/xs:documentation')
 
     prop_dict = {prop_el.get('name'): {
-        'name': prop_name,
-        'type': prop_type,
+        'name': prop_dict['name'],
+        'type': prop_dict['type'],
         'kind': 'Property',
         'cardinality': 1, # TODO: Philip logic
         'definition': documentation,

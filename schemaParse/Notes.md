@@ -16,6 +16,14 @@
 # Notes
 ## on Destinguishing between properties and sub properties
 
+Types in DataCite XML:
+* complexType/sequence
+* complexType/simpleContent
+* simpleType'
+* none
+
+
+
 property w/out sub properties
 * identifier:
     * `element/complexType/simpleContent/extension/`
