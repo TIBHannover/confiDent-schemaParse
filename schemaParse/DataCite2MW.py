@@ -56,94 +56,94 @@ def parse_resource(tree, resource_root_xpath: str) -> (str,Dict):
     return resource, resource_dict
 
 
-def property_nameNtype(tree, prop_el) -> dict:
+def get_subproperty(subprop) -> (str, dict):
+    sub_prop_name = subprop.get('name')
+    if subprop.find('./xs:complexType/', namespaces=ns) is not None:
+        prop_type = 'complexType'
+    else:
+        prop_type = 'simpleType'
+
+    prop_dict = fill_prop_dict(name=sub_prop_name,
+                               _type=prop_type,
+                               kind='SubProperty',
+                               doc=''  # subProps do not seem to have document.
+                               )
+    return sub_prop_name, prop_dict
+
+
+def get_property(tree, prop_el: str) -> (str, dict):
     '''
     Identifies property attributes:
     * property name
     * complexType OR simpleType
         * complexType: simpleContent sequence or
      sequence OR simpleContent
-    Returns dict:
-        prop: {
-        name:
-        type: complexType OR simpleType,
-        complexType: simpleContent or sequence or (None for simpleType)
-                        }
-    '''
+    Returns (propety_name, prop_dict)
 
+    '''
     if prop_el.find('./xs:complexType/xs:sequence', namespaces=ns) is not None:
         prop_type = 'complexType'
-        prop_complexType = 'sequence'
         prop_el_squnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
                                       namespaces=ns)
         prop_name = prop_el_squnce.get('name')
     elif prop_el.find('./xs:complexType/xs:simpleContent',
                       namespaces=ns) is not None:
         prop_type = 'complexType'
-        prop_complexType = 'simpleContent'
         prop_name = prop_el.get('name')
     elif prop_el.find('./xs:simpleType',
                       namespaces=ns) is not None:
         prop_type = 'simpleType'
-        prop_complexType = None
         prop_name = prop_el.get('name')
     else:
         # properties language & version have NO complexType or simpleType
         # I will assume they are simpleType ヽ༼ຈل͜ຈ༽ﾉ
         prop_type = 'simpleType'
-        prop_complexType = None
         prop_name = prop_el.get('name')
 
-    nameNtype_dict = {'type': prop_type,
-                 'complexType': prop_complexType,
-                 'name': prop_name
-                }
-    pprint(nameNtype_dict)
-    if __debug__:
-        if nameNtype_dict.get('name') not in prop_el.get("name"):
-            print('Error: {} is not in {}'.format(
-                nameNtype_dict.get('name'),
-                prop_el.get("name"))
-            )
-            raise AssertionError
-    return nameNtype_dict
+    doc = get_documentation(parent_el=prop_el,
+                            doc_xpath='.//xs:annotation/xs:documentation')
+
+    prop_dict = fill_prop_dict(name=prop_name,
+                               _type=prop_type,
+                               kind='Property',
+                               doc=doc)
+    # pprint(name_type_dict)
+    if __debug__ and prop_dict.get('name') not in prop_el.get("name"):
+        print('Error: {} is not in {}'.format(
+            prop_dict.get('name'),
+            prop_el.get("name"))
+        )
+        raise AssertionError
+    return prop_name, prop_dict
 
 
-    # # REUSE THIS IN SEQUENCE SUB ELEMENTs
-    # elif simple_or_sequence == 'sequence':
-    #     prop_el_squnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
-    #                                   namespaces=ns)
-    #     prop_name = prop_el_squnce.get('name')
-    #     sub_properties = prop_el_squnce.findall(
-    #         './xs:complexType/xs:sequence/xs:element', namespaces=ns)
-    #     for sub in sub_properties:
-    #         sub_prop_name = sub.get('name')
-    #         print(f'SUB {sub_prop_name}')
-
-def parse_properties(tree, prop_el) -> Dict:
-    nameNtype_dict = property_nameNtype(tree, prop_el)
-
-    # for tag in tree.findall('./'):  # direct child elements
-    #     # TODO: review Type
-    #     if 'Type' in tag.tag:
-    #         prop_type = tag.tag
-    #         prop_type = prop_type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
-    #     else:
-    #         prop_type = ''
-
-    documentation = get_documentation(
-        parent_el=prop_el,
-        doc_xpath='.//xs:annotation/xs:documentation')
-
-    prop_dict = {prop_el.get('name'): {
-        'name': nameNtype_dict['name'],
-        'type': nameNtype_dict['type'],
-        'kind': 'Property',
-        'cardinality': 1, # TODO: Philip logic
-        'definition': documentation,
-        'allowedValue': '',
-        'examples': ''}}
+def fill_prop_dict(name: str, _type: str, kind: str, doc: str = '',
+                   allowed: str = '', cardi: int = 1, exe: str = '') -> dict:
+    prop_dict = {
+        'name': name,
+        'type': _type,
+        'kind': kind,
+        'cardinality': cardi,  # TODO: Philip logic
+        'definition': doc,
+        'allowedValue': allowed,
+        'examples': exe}
     return prop_dict
+
+
+def parse_prop_n_subp(tree, prop_el) -> dict:
+    prop_name, prop_dict = get_property(tree, prop_el)
+    prop_n_subprop_dict = {prop_name: prop_dict}
+    # sub properties
+    subprop_xpath = './xs:complexType/xs:sequence/xs:element/xs' \
+                       ':complexType/xs:sequence/xs:element'
+    if prop_dict['type'] == 'complexType' and \
+            prop_el.find(subprop_xpath, namespaces=ns):
+        for sub in prop_el.findall(subprop_xpath, namespaces=ns):
+            subprop_name, subprop_vals_dict = get_subproperty(subprop=sub)
+            subprop_dict = {subprop_name: subprop_vals_dict}
+            prop_n_subprop_dict.update(subprop_dict)
+    # pprint(prop_n_subprop_dict)
+    return prop_n_subprop_dict
 
 
 def dataciteSchema2dict(xmlcode: str) -> Dict:
@@ -165,7 +165,7 @@ def dataciteSchema2dict(xmlcode: str) -> Dict:
     # properties
     for prop in resource.findall('./xs:complexType/xs:all/xs:element',
                                   namespaces=ns):
-        prop_dict= parse_properties(tree=tree, prop_el=prop)
+        prop_dict=parse_prop_n_subp(tree=tree, prop_el=prop)
         datacite_els_dict.update(prop_dict)
 
     return datacite_els_dict
