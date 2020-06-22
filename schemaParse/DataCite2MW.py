@@ -94,16 +94,19 @@ def property_nameNtype(tree, prop_el) -> dict:
         prop_complexType = None
         prop_name = prop_el.get('name')
 
-    prop_dict = {'type': prop_type,
+    nameNtype_dict = {'type': prop_type,
                  'complexType': prop_complexType,
                  'name': prop_name
                 }
-    pprint(prop_dict)
+    pprint(nameNtype_dict)
     if __debug__:
-        if prop_dict.get('name') not in prop_el.get("name"):
-            print(f'Error: {prop_name} is not in {prop_el.get("name")}')
+        if nameNtype_dict.get('name') not in prop_el.get("name"):
+            print('Error: {} is not in {}'.format(
+                nameNtype_dict.get('name'),
+                prop_el.get("name"))
+            )
             raise AssertionError
-    return prop_dict
+    return nameNtype_dict
 
 
     # # REUSE THIS IN SEQUENCE SUB ELEMENTs
@@ -118,23 +121,23 @@ def property_nameNtype(tree, prop_el) -> dict:
     #         print(f'SUB {sub_prop_name}')
 
 def parse_properties(tree, prop_el) -> Dict:
-    prop_dict = property_nameNtype(tree, prop_el)
+    nameNtype_dict = property_nameNtype(tree, prop_el)
 
-    for tag in tree.findall('./'):  # direct child elements
-        # TODO: review Type
-        if 'Type' in tag.tag:
-            prop_type = tag.tag
-            prop_type = prop_type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
-        else:
-            prop_type = ''
+    # for tag in tree.findall('./'):  # direct child elements
+    #     # TODO: review Type
+    #     if 'Type' in tag.tag:
+    #         prop_type = tag.tag
+    #         prop_type = prop_type.replace(f'{{{XMLSchema}}}', '')  # rm schema uri
+    #     else:
+    #         prop_type = ''
 
     documentation = get_documentation(
         parent_el=prop_el,
         doc_xpath='.//xs:annotation/xs:documentation')
 
     prop_dict = {prop_el.get('name'): {
-        'name': prop_dict['name'],
-        'type': prop_dict['type'],
+        'name': nameNtype_dict['name'],
+        'type': nameNtype_dict['type'],
         'kind': 'Property',
         'cardinality': 1, # TODO: Philip logic
         'definition': documentation,
