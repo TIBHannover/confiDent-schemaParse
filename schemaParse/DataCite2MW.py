@@ -89,7 +89,7 @@ def get_attribute(attr_el) -> dict:
     return attr_dict
 
 
-def get_subproperty(subprop_el) -> (str, dict):
+def get_subproperty(subprop_el) -> dict:
     sub_prop_name = subprop_el.get('name')
     if subprop_el.find('./xs:complexType/', namespaces=ns) is not None:
         prop_type = 'complexType'
@@ -102,9 +102,9 @@ def get_subproperty(subprop_el) -> (str, dict):
                                _type=prop_type,
                                kind='SubProperty',
                                doc='',  # subProps do not seem to have document.
-                               cardi=cardi
-                               )
-    return sub_prop_name, prop_dict
+                               cardi=cardi)
+    prop_dict = {sub_prop_name: prop_dict}
+    return prop_dict
 
 
 def get_property(tree, prop_el: str) -> (str, dict):
@@ -115,7 +115,6 @@ def get_property(tree, prop_el: str) -> (str, dict):
         * complexType: simpleContent sequence or
      sequence OR simpleContent
     Returns (propety_name, prop_dict)
-
     '''
     prop_el_squnce = None
     if prop_el.find('./xs:complexType/xs:sequence', namespaces=ns) is not None:
@@ -161,7 +160,7 @@ def get_property(tree, prop_el: str) -> (str, dict):
 
 
 def fill_prop_dict(name: str, _type: str = '', kind: str = '', doc: str = '',
-                   allowed: str = '', cardi: int = 1, exe: str = '') -> dict:
+                   allowed: str = '', cardi: str = '', exe: str = '') -> dict:
     prop_dict = {
         'name': name,
         'type': _type,
@@ -175,9 +174,6 @@ def fill_prop_dict(name: str, _type: str = '', kind: str = '', doc: str = '',
 
 def parse_prop_n_subp(tree, prop_el) -> dict:
     prop_name, prop_n_subprop_dict = get_property(tree, prop_el)
-    # sub properties
-    subprop_xpath = './xs:complexType/xs:sequence/xs:element/xs' \
-                    ':complexType/xs:sequence/xs:element'
 
     # attributes: both props on subprops can have, hence repeating .findall
     attr_xpath = './xs:complexType/xs:simpleContent/xs:extension/xs:attribute'
@@ -185,12 +181,13 @@ def parse_prop_n_subp(tree, prop_el) -> dict:
         attr_dict = get_attribute(attr)
         prop_n_subprop_dict.update(attr_dict)
         # print(etree.tostring(attr))
-
+    # sub properties
+    subprop_xpath = './xs:complexType/xs:sequence/xs:element/xs' \
+                    ':complexType/xs:sequence/xs:element'
     if prop_n_subprop_dict[prop_name]['type'] == 'complexType' and \
             prop_el.find(subprop_xpath, namespaces=ns) is not None:
         for sub in prop_el.findall(subprop_xpath, namespaces=ns):
-            subprop_name, subprop_vals_dict = get_subproperty(subprop_el=sub)
-            subprop_dict = {subprop_name: subprop_vals_dict}
+            subprop_dict = get_subproperty(subprop_el=sub)
             prop_n_subprop_dict.update(subprop_dict)
             for attr in sub.findall(attr_xpath, namespaces=ns):
                 attr_dict = get_attribute(attr)
