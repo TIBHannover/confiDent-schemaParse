@@ -5,12 +5,16 @@
         and not <xs:element name="creators">
 
 # TODO:
-* SubProperty
-* attribute -> descendent of  element of
+* **attribute** needs reviewing
+* HOw to handle <xs:attribute ref="xml:lang"/> attrib for language of
+content
+* How to handle attributes without type?
+* attribute and sub property parent: not present on MW output
+
 * mapsTo
-* type: needs clarification
 * allowedValue (for later)
 * example (for later)
+
 
 # Notes
 ## attributes:

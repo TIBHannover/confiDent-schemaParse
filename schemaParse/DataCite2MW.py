@@ -50,7 +50,7 @@ def parse_resource(tree, resource_root_xpath: str) -> (str,Dict):
         'name': resource.get('name'),
         'type': _type,
         'kind': 'Entity',
-        'cardinality': 1,  # TODO: Philip logic
+        'cardinality': 1,
         'definition': documentation
     }}
     return resource, resource_dict
@@ -78,6 +78,7 @@ def get_cardinality(el) -> str:
 
 
 def get_attribute(attr_el) -> dict:
+    # TODO: expand:
     attr_name = attr_el.get('name')
     attr_dict = fill_prop_dict(name=attr_name,
                                kind='Attribute',
@@ -95,9 +96,7 @@ def get_subproperty(subprop_el) -> dict:
         prop_type = 'complexType'
     else:
         prop_type = 'simpleType'
-
     cardi = get_cardinality(el=subprop_el)
-
     prop_dict = fill_prop_dict(name=sub_prop_name,
                                _type=prop_type,
                                kind='SubProperty',
@@ -107,9 +106,9 @@ def get_subproperty(subprop_el) -> dict:
     return prop_dict
 
 
-def get_property(tree, prop_el: str) -> (str, dict):
+def get_property(prop_el: str) -> (str, dict):
     '''
-    Identifies property attributes:
+    Identifies property:
     * property name
     * complexType OR simpleType
         * complexType: simpleContent sequence or
@@ -172,8 +171,10 @@ def fill_prop_dict(name: str, _type: str = '', kind: str = '', doc: str = '',
     return prop_dict
 
 
-def parse_prop_n_subp(tree, prop_el) -> dict:
-    prop_name, prop_n_subprop_dict = get_property(tree, prop_el)
+def parse_property(tree, prop_el) -> dict:
+    # def parses 1 property and its descendants: subProperty, attribute
+
+    prop_name, prop_n_subprop_dict = get_property(prop_el)
 
     # attributes: both props on subprops can have, hence repeating .findall
     attr_xpath = './xs:complexType/xs:simpleContent/xs:extension/xs:attribute'
@@ -181,6 +182,7 @@ def parse_prop_n_subp(tree, prop_el) -> dict:
         attr_dict = get_attribute(attr)
         prop_n_subprop_dict.update(attr_dict)
         # print(etree.tostring(attr))
+
     # sub properties
     subprop_xpath = './xs:complexType/xs:sequence/xs:element/xs' \
                     ':complexType/xs:sequence/xs:element'
@@ -193,13 +195,6 @@ def parse_prop_n_subp(tree, prop_el) -> dict:
                 attr_dict = get_attribute(attr)
                 prop_n_subprop_dict.update(attr_dict)
                 # print(etree.tostring(attr))
-    # TODO:
-    # * **attribute** needs revewing
-    # * HOw to handle <xs:attribute ref="xml:lang"/> attrib for language of
-    # content
-    # * How to handle attributes without type?
-    #
-    # * attribute and sub property parent: not present on MW output
 
     # pprint(prop_n_subprop_dict)
     return prop_n_subprop_dict
@@ -224,7 +219,7 @@ def dataciteSchema2dict(xmlcode: str) -> Dict:
     # properties
     for prop in resource.findall('./xs:complexType/xs:all/xs:element',
                                   namespaces=ns):
-        prop_dict=parse_prop_n_subp(tree=tree, prop_el=prop)
+        prop_dict=parse_property(tree=tree, prop_el=prop)
         datacite_els_dict.update(prop_dict)
 
     return datacite_els_dict
