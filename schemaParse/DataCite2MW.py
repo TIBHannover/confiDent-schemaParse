@@ -156,6 +156,7 @@ def get_property(tree, prop_el: str) -> (str, dict):
             prop_el.get("name"))
         )
         raise AssertionError
+    prop_dict = {prop_name: prop_dict}  # prop_dict: {prop_name: {name:...}}
     return prop_name, prop_dict
 
 
@@ -173,8 +174,7 @@ def fill_prop_dict(name: str, _type: str = '', kind: str = '', doc: str = '',
 
 
 def parse_prop_n_subp(tree, prop_el) -> dict:
-    prop_name, prop_dict = get_property(tree, prop_el)
-    prop_n_subprop_dict = {prop_name: prop_dict}
+    prop_name, prop_n_subprop_dict = get_property(tree, prop_el)
     # sub properties
     subprop_xpath = './xs:complexType/xs:sequence/xs:element/xs' \
                     ':complexType/xs:sequence/xs:element'
@@ -186,7 +186,7 @@ def parse_prop_n_subp(tree, prop_el) -> dict:
         prop_n_subprop_dict.update(attr_dict)
         # print(etree.tostring(attr))
 
-    if prop_dict['type'] == 'complexType' and \
+    if prop_n_subprop_dict[prop_name]['type'] == 'complexType' and \
             prop_el.find(subprop_xpath, namespaces=ns) is not None:
         for sub in prop_el.findall(subprop_xpath, namespaces=ns):
             subprop_name, subprop_vals_dict = get_subproperty(subprop_el=sub)
