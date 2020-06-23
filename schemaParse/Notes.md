@@ -7,14 +7,57 @@
 # TODO:
 * SubProperty
 * attribute -> descendent of  element of
-* cardinality:
 * mapsTo
 * type: needs clarification
 * allowedValue (for later)
 * example (for later)
 
 # Notes
-## modifiers: sub sub property:
+## attributes:
+* 1: Identifier
+** 1.a: identifierType
+ ```
+<xs:element name="identifier">
+  <xs:annotation>
+    <xs:documentation>A persistent identifier that identifies a resource.</xs:documentation>
+  </xs:annotation>
+  <xs:complexType>
+    <xs:simpleContent>
+      <xs:extension base="nonemptycontentStringType">
+        <xs:attribute name="identifierType" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:element>
+```
+ * 2: Creator       (property)
+ * 2.1: creatorName (subproperty) 
+ * 2.1.a: nameType  (attribute)
+```
+<xs:element name="creators">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="creator" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.</xs:documentation>
+          <xs:documentation>Format: Family, Given.</xs:documentation>
+          <xs:documentation>Personal names can be further specified using givenName and familyName.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="creatorName">
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="xs:string">
+                    <xs:attribute name="nameType" type="nameType" use="optional"/>
+                    <xs:attribute ref="xml:lang"/>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="givenName" minOccurs="0"/>
+
+```
 * 2.4.a: nameIdentifierScheme
 * 2.4.b: schemeURL
 * 2.5.a: affiliationIdentifier

@@ -77,14 +77,26 @@ def get_cardinality(el) -> str:
     return cardinality
 
 
-def get_subproperty(subprop) -> (str, dict):
-    sub_prop_name = subprop.get('name')
-    if subprop.find('./xs:complexType/', namespaces=ns) is not None:
+def get_attribute(attr_el) -> dict:
+    attr_name = attr_el.get('name')
+    attr_dict = fill_prop_dict(name=attr_name,
+                               kind='Attribute',
+                               _type=attr_el.get('type'),
+                               cardi=attr_el.get('use'),
+                               doc="** Attribute needs reviewing**:'use' attr "\
+                                   "in cardinality; ")
+    attr_dict = {attr_name: attr_dict}
+    return attr_dict
+
+
+def get_subproperty(subprop_el) -> (str, dict):
+    sub_prop_name = subprop_el.get('name')
+    if subprop_el.find('./xs:complexType/', namespaces=ns) is not None:
         prop_type = 'complexType'
     else:
         prop_type = 'simpleType'
 
-    cardi = get_cardinality(el=subprop)
+    cardi = get_cardinality(el=subprop_el)
 
     prop_dict = fill_prop_dict(name=sub_prop_name,
                                _type=prop_type,
@@ -147,13 +159,13 @@ def get_property(tree, prop_el: str) -> (str, dict):
     return prop_name, prop_dict
 
 
-def fill_prop_dict(name: str, _type: str, kind: str, doc: str = '',
+def fill_prop_dict(name: str, _type: str = '', kind: str = '', doc: str = '',
                    allowed: str = '', cardi: int = 1, exe: str = '') -> dict:
     prop_dict = {
         'name': name,
         'type': _type,
         'kind': kind,
-        'cardinality': cardi,  # TODO: Philip logic
+        'cardinality': cardi,
         'definition': doc,
         'allowedValue': allowed,
         'examples': exe}
@@ -165,13 +177,33 @@ def parse_prop_n_subp(tree, prop_el) -> dict:
     prop_n_subprop_dict = {prop_name: prop_dict}
     # sub properties
     subprop_xpath = './xs:complexType/xs:sequence/xs:element/xs' \
-                       ':complexType/xs:sequence/xs:element'
+                    ':complexType/xs:sequence/xs:element'
+
+    # attributes: both props on subprops can have, hence repeating .findall
+    attr_xpath = './xs:complexType/xs:simpleContent/xs:extension/xs:attribute'
+    for attr in prop_el.findall(attr_xpath, namespaces=ns):
+        attr_dict = get_attribute(attr)
+        prop_n_subprop_dict.update(attr_dict)
+        # print(etree.tostring(attr))
+
     if prop_dict['type'] == 'complexType' and \
             prop_el.find(subprop_xpath, namespaces=ns) is not None:
         for sub in prop_el.findall(subprop_xpath, namespaces=ns):
-            subprop_name, subprop_vals_dict = get_subproperty(subprop=sub)
+            subprop_name, subprop_vals_dict = get_subproperty(subprop_el=sub)
             subprop_dict = {subprop_name: subprop_vals_dict}
             prop_n_subprop_dict.update(subprop_dict)
+            for attr in sub.findall(attr_xpath, namespaces=ns):
+                attr_dict = get_attribute(attr)
+                prop_n_subprop_dict.update(attr_dict)
+                # print(etree.tostring(attr))
+    # TODO:
+    # * **attribute** needs revewing
+    # * HOw to handle <xs:attribute ref="xml:lang"/> attrib for language of
+    # content
+    # * How to handle attributes without type?
+    #
+    # * attribute and sub property parent: not present on MW output
+
     # pprint(prop_n_subprop_dict)
     return prop_n_subprop_dict
 
