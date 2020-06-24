@@ -1,0 +1,14 @@
+# Mapping confiDent properties to DataCite Schema
+# confiDentProp:
+#     external Prop: XYZ
+DataCite:
+  EventId:
+    Identifier
+  EventName:
+    Title
+  EventDuration:
+    PublicationYear
+  SeriesId:
+    Identifier
+  SeriesName:
+    Title
