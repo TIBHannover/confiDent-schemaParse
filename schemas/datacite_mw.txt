@@ -24,7 +24,7 @@
 |name=Identifier
 |kind=Property
 |type=XSD:complexType
-|parent=
+|parent=DataCite/resource
 |cardinality=1
 |mapsTo=ConfIDentSchema/EventId
 |definition=A persistent identifier that identifies a resource.
@@ -40,6 +40,7 @@
 |kind=Property
 |cardinality=1-n
 |mapsTo=ConfIDentSchema/EventName
+|mapsTo=ConfIDentSchema/SeriesName
 |definition=A name or title by which a resource is known. May be the title of a dataset or the name of a piece of software.
 |schema=DataCite
 |storemode=subobject
@@ -49,6 +50,7 @@
 |name=identifierType
 |kind=SubProperty
 |cardinality=1
+|parent=
 |definition=The type of Identifier.
 |comment=''Controlled List Value:''
 |allowedValue=DOI

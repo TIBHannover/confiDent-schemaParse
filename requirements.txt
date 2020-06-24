@@ -1,3 +1,4 @@
 xmlschema
 lxml
 Jinja2
+pyyaml

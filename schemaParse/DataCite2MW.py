@@ -6,10 +6,13 @@ from typing import Dict
 from collections import OrderedDict
 from jinja2 import (FileSystemLoader,
                     Environment)
+from readyaml import readmapping_yaml, add_mapsto
 
 datacite_schema_uri = 'https://schema.datacite.org/meta/kernel-4.3/metadata.xsd'
 XMLSchema = 'http://www.w3.org/2001/XMLSchema'
 ns = {'xs': XMLSchema}
+extschema, extschema_mapping = readmapping_yaml(
+    'mappings2confiDent/DataCite.yml')
 
 # Jinja: Env & Templates
 project_dir = Path(__file__).parent.absolute()
@@ -229,6 +232,9 @@ schema_xml = fetch_schema(uri=datacite_schema_uri,
                           contenttype='application/rdf+xml')
 
 datacite_elements = dataciteSchema2dict(xmlcode=schema_xml)
+x = add_mapsto(mapping=extschema_mapping,
+                              schema_els=datacite_elements)
+
 # print(datacite_elements.keys())
 # pprint(datacite_elements)
 

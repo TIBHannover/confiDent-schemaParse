@@ -16,6 +16,8 @@
 |type=XSD:{{ elements_dict[ element ]['type'] }}
 |cardinality={{ elements_dict[ element ]['cardinality'] }}
 |definition={{ elements_dict[ element ]['definition'] }}
+{% for mapsto in elements_dict[ element ]['mapsTo'] %}
+|mapsTo={{mapsto|safe}}{% endfor %}
 |schema=DataCite
 |storemode=subobject
 {{ '}}' }}
