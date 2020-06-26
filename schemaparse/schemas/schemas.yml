@@ -1,4 +1,5 @@
 DataCite:
   uri: https://schema.datacite.org/meta/kernel-4.3/metadata.xsd
-  ns_schema: http://www.w3.org/2001/XMLSchema
-  ns_prefix: xs XMLSchema
+  ns: http://www.w3.org/2001/XMLSchema
+  ns_prefix: xs
+  contenttype: application/rdf+xml

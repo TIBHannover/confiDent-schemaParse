@@ -3,7 +3,7 @@ from pathlib import Path
 from jinja2 import (FileSystemLoader,
                     Environment)
 from schemaparse.utilities import readyaml
-
+from schemaparse.utilities import schema
 
 # extschema, extschema_mapping = readmapping_yaml('mappings2confiDent/DataCite.yml')
 
@@ -17,13 +17,19 @@ def load_template(schema: str):
     return template
 
 
-def schema2mw(schema):
-    s = f'Schema {schema} will be turned to MW'
-    template = load_template(schema)
-    uri, ns, ns_prefix = readyaml.yaml_get_schemainfo(schema)
-    mapping = readyaml.yaml_get_schemamapping(schema)
+def schema2mw(_schema):
+    s = f'Schema {_schema} will be turned to MW'
+    template = load_template(_schema)
+    uri, ns, ns_prefix, contenttype = readyaml.yaml_get_schemainfo(_schema)
+    mapping = readyaml.yaml_get_schemamapping(_schema)
+    schema_info = {"schema": _schema,
+                   "uri": uri,
+                   "ns": ns,
+                   "ns_prefix": ns_prefix,
+                   "contenttype": contenttype}
+    schema.parseschema(schema_info=schema_info, template=template)
 
-    print(uri, ns, ns_prefix)
+    print(template, uri, ns, ns_prefix)
     print(mapping)
 
     return(s)

@@ -9,12 +9,13 @@ def yaml2dict(path:str) -> Dict:
     return yaml_dict
 
 
-def yaml_get_schemainfo(schema: str) -> Tuple[str, str, str]:
+def yaml_get_schemainfo(schema: str) -> Tuple[str, str, str, str]:
     schema_info = yaml2dict('schemaparse/schemas/schemas.yml')
     uri = schema_info[schema]['uri']
-    ns = schema_info[schema]['ns_schema']
+    ns = schema_info[schema]['ns']
     ns_prefix = schema_info[schema]['ns_prefix']
-    return uri, ns, ns_prefix
+    contenttype = schema_info[schema]['contenttype']
+    return uri, ns, ns_prefix, contenttype
 
 
 def yaml_get_schemamapping(schema: str) -> Dict:
