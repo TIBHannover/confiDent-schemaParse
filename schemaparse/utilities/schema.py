@@ -1,6 +1,8 @@
 from typing import Dict, List
 from urllib import request
 from schemaparse.parsers import datacite
+from schemaparse import app
+import schemaparse.globals as _globals
 
 
 def fetch_schema(uri: str, contenttype: str) -> str:
@@ -11,11 +13,10 @@ def fetch_schema(uri: str, contenttype: str) -> str:
     return data
 
 
-def parseschema(schema_info: Dict, template: object):
-    schema_xml = fetch_schema(uri=schema_info['uri'],
-                              contenttype=schema_info['contenttype'])
-    if schema_info['schema'] == 'DataCite':
-        schema_dict = datacite.schema2dict(xmlcode=schema_xml,
-                                           schema_info=schema_info)
+def parseschema(template: object):
+    schema_xml = fetch_schema(uri=_globals.schemainfo.uri,
+                              contenttype=_globals.schemainfo.contenttype)
+    if _globals.schemainfo.schema == 'DataCite':
+        schema_dict = datacite.schema2dict(xmlcode=schema_xml)
 
 

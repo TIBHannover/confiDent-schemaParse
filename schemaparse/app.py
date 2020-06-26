@@ -4,8 +4,17 @@ from jinja2 import (FileSystemLoader,
                     Environment)
 from schemaparse.utilities import readyaml
 from schemaparse.utilities import schema
+import schemaparse.globals as _globals
 
-# extschema, extschema_mapping = readmapping_yaml('mappings2confiDent/DataCite.yml')
+
+class SchemaInfo:
+    def __init__(self, schemaname: str, uri: str, ns: str, ns_prefix: str,
+                 contenttype: str):
+        self.schema = schemaname
+        self.uri = uri
+        self.ns = ns
+        self.ns_prefix = ns_prefix
+        self.contenttype = contenttype
 
 
 def load_template(schema: str):
@@ -22,14 +31,16 @@ def schema2mw(_schema):
     template = load_template(_schema)
     uri, ns, ns_prefix, contenttype = readyaml.yaml_get_schemainfo(_schema)
     mapping = readyaml.yaml_get_schemamapping(_schema)
-    schema_info = {"schema": _schema,
-                   "uri": uri,
-                   "ns": ns,
-                   "ns_prefix": ns_prefix,
-                   "contenttype": contenttype}
-    schema.parseschema(schema_info=schema_info, template=template)
+    _globals.schemainfo = SchemaInfo(schemaname=_schema,
+                                     uri=uri,
+                                     ns=ns,
+                                     ns_prefix=ns_prefix,
+                                     contenttype=contenttype)
+    schema.parseschema(template=template)
 
     print(template, uri, ns, ns_prefix)
     print(mapping)
-
+    print(_globals.schemainfo.__dict__)
     return(s)
+
+

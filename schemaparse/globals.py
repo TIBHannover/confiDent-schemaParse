@@ -1,0 +1,2 @@
+global schemainfo
+schemainfo = None
