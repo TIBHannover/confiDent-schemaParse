@@ -2,7 +2,7 @@ from typing import List, Dict, Tuple
 import yaml
 
 
-def yaml2dict(path:str) -> Dict:
+def yaml2dict(path: str) -> Dict:
     with open(path, 'r') as yaml_f:
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
@@ -45,13 +45,5 @@ def add_mapsto(mapping: Dict, schema_els: Dict):
     for prop_k, prop_dict in schema_els.items():
         prop_name = prop_dict.get('name')
         mapsTo_val = [map_prop for map_prop in prop_extschema2confid(
-            extschema=mapping,extprop=prop_name)]
+            extschema=mapping, extprop=prop_name)]
         schema_els[prop_name]['mapsTo'] = mapsTo_val
-
-
-if __name__ == '__main__':
-    extschema, extschema_dict = readmapping_yaml('mappings2confiDent/DataCite.yml')
-    # what keys have the value: Title?
-    for conf_prop in prop_extschema2confid(extschema=extschema_dict,
-                                           extprop='Title'):
-        print(conf_prop)

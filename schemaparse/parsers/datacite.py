@@ -1,5 +1,5 @@
 from pprint import pprint
-from typing import Dict, List
+from typing import Dict
 from _collections import OrderedDict
 from lxml import etree
 import schemaparse.globals as _globals

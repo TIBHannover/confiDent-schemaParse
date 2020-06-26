@@ -1,4 +1,3 @@
-from typing import Tuple
 from pathlib import Path
 from jinja2 import (FileSystemLoader,
                     Environment)
@@ -42,5 +41,3 @@ def schema2mw(_schema):
     print(mapping)
     print(_globals.schemainfo.__dict__)
     return(s)
-
-
