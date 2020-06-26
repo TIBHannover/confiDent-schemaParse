@@ -12,6 +12,22 @@
 * `python -m schemaparse --list` available schemas
 * `python -m schemaparse --help`
 
+## debug
+
+With iPython / Python and module import:
+```python
+from pprint import pprint
+from schemaparse.utilities import readyaml
+mapping_dict = readyaml.yaml_get_schemamapping(schema='DataCite')
+pprint(mapping_dict)
+
+{'EventDuration': 'PublicationYear',
+ 'EventId': 'Identifier',
+ 'EventName': 'Title',
+ 'SeriesId': 'Identifier',
+ 'SeriesName': 'Title'}
+```
+
 ## TODO
 * make template more general purpose 
     * How similar in DC MW template to other Schemas templates?
