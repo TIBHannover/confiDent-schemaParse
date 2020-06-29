@@ -9,6 +9,7 @@
 
 ## run
 * `python -m schemaparse` (default DataCite)
+* `python -m schemaparse --output datacie.wiki` write to file
 * `python -m schemaparse --list` available schemas
 * `python -m schemaparse --help`
 

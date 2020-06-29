@@ -34,7 +34,8 @@ def schema2mw(_schema):
                                      ns=ns,
                                      ns_prefix=ns_prefix,
                                      contenttype=contenttype)
-    schema_mw = schema.parseschema(template=template)
+    schema_mw = schema.parseschema(template=template,
+                                   mapping=mapping)
     # print(template, uri, ns, ns_prefix)
     # print(mapping)
     # print(_globals.schemainfo.__dict__)
