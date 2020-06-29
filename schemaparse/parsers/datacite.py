@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import Dict
 from _collections import OrderedDict
 from lxml import etree
@@ -48,8 +47,8 @@ def get_attribute(attr_el) -> dict:
                                kind='Attribute',
                                _type=attr_el.get('type'),
                                cardi=attr_el.get('use'),
-                               doc="** Attribute needs reviewing**:'use' attr "\
-                                   "in cardinality; ")
+                               doc="** Attribute needs reviewing**:'use' "
+                                   "attr in cardinality; ")
     attr_dict = {attr_name: attr_dict}
     return attr_dict
 
@@ -65,7 +64,7 @@ def get_subproperty(subprop_el) -> dict:
     prop_dict = fill_prop_dict(name=sub_prop_name,
                                _type=prop_type,
                                kind='SubProperty',
-                               doc='',  # subProps do not seem to have document.
+                               doc='',  # subProps do not seem to have document
                                cardi=cardi)
     prop_dict = {sub_prop_name: prop_dict}
     return prop_dict
@@ -80,12 +79,13 @@ def get_property(prop_el: str) -> (str, dict):
      sequence OR simpleContent
     Returns (propety_name, prop_dict)
     '''
-    prop_el_squnce = None
-    if prop_el.find('./xs:complexType/xs:sequence', namespaces=_globals.schemainfo.ns_dict) is not None:
+    prop_el_sqnce = None
+    if prop_el.find('./xs:complexType/xs:sequence',
+                    namespaces=_globals.schemainfo.ns_dict) is not None:
         prop_type = 'complexType'
-        prop_el_squnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
-                                      namespaces=_globals.schemainfo.ns_dict)
-        prop_name = prop_el_squnce.get('name')
+        prop_el_sqnce = prop_el.find('./xs:complexType/xs:sequence/xs:element',
+                                     namespaces=_globals.schemainfo.ns_dict)
+        prop_name = prop_el_sqnce.get('name')
     elif prop_el.find('./xs:complexType/xs:simpleContent',
                       namespaces=_globals.schemainfo.ns_dict) is not None:
         prop_type = 'complexType'
@@ -102,8 +102,8 @@ def get_property(prop_el: str) -> (str, dict):
 
     doc = get_documentation(el=prop_el,
                             doc_xpath='.//xs:annotation/xs:documentation')
-    if prop_el_squnce is not None:  # element with sequence
-        cardi = get_cardinality(el=prop_el_squnce)
+    if prop_el_sqnce is not None:  # element with sequence
+        cardi = get_cardinality(el=prop_el_sqnce)
     else:
         cardi = get_cardinality(el=prop_el)
 
@@ -163,7 +163,7 @@ def parse_property(tree, prop_el) -> dict:
 
     # attributes: both props on subprops can have, hence repeating .findall
     attr_xpath = './xs:complexType/xs:simpleContent/xs:extension/xs:attribute'
-    for attr in prop_el.findall(attr_xpath, 
+    for attr in prop_el.findall(attr_xpath,
                                 namespaces=_globals.schemainfo.ns_dict):
         attr_dict = get_attribute(attr)
         add_parent(nodedict=attr_dict, parentname=prop_name)
@@ -207,7 +207,7 @@ def schema2dict(xmlcode: str) -> Dict:
 
     # properties
     for prop in resource.findall('./xs:complexType/xs:all/xs:element',
-                                  namespaces=_globals.schemainfo.ns_dict):
-        prop_dict=parse_property(tree=tree, prop_el=prop)
-        # elements_dict.update(prop_dict)
+                                 namespaces=_globals.schemainfo.ns_dict):
+        prop_dict = parse_property(tree=tree, prop_el=prop)
+        elements_dict.update(prop_dict)
     return elements_dict
