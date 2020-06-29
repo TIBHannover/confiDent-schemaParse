@@ -6,6 +6,7 @@ import schemaparse.globals as _globals
 
 multiple_spaces_regex = re.compile(r'\s+', re.MULTILINE)
 
+
 def get_documentation(el, doc_xpath: str):
     documentation = ''
     for doc in el.findall(doc_xpath,

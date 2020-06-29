@@ -13,6 +13,16 @@
 * `python -m schemaparse --list` available schemas
 * `python -m schemaparse --help`
 
+## run tests
+`tox`
+will run tests and detect flake8s
+
+`python -m pytest`
+will only run the tests/test*.py
+
+`flake8 somefile`
+lint checks
+
 ## debug
 
 With iPython / Python and module import:
