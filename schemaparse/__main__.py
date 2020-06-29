@@ -2,7 +2,7 @@ from schemaparse import app
 from schemaparse.utilities import io
 from argparse import ArgumentParser
 
-schemas = ['DataCite', 'CrossRef']
+schemas = ['DataCite']  # 'CrossRef'
 parser = ArgumentParser(description='Test app')
 parser.add_argument('-s', '--schema',
                     choices=schemas,
