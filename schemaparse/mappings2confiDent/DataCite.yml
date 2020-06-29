@@ -1,14 +1,82 @@
 # Mapping confiDent properties to DataCite Schema
-# confiDentProp:
-#     external Prop: XYZ
+# based on https://wiki.tib.eu/confluence/display/openresearch/Draft+-+ConfIDent+Metadata+Schema+as+Table
+
+# SchemaName:
+#   confiDent Property:
+#     schema Property
+
+# Academic Event Properties
 DataCite:
   EventId:
     Identifier
+  eventIdURL:
+    Resource
   EventName:
     Title
-  EventDuration:
-    PublicationYear
+  eventNameType:
+    titleType
+  SeriesId:
+    RelatedIdentifier  # RelatedIdentifier?
+  EventOrganizer:
+    EventOrganizer  # EventOrganizer?
+  EventSubject:
+    Subject
+  EventLocation:
+    GeoLocation  # GeoLocation?
+  eventCoordinates:
+    geoLocationPoint
+  eventLongitude:
+    pointLongitude
+  eventLatitude:
+    pointLatitude
+  eventVenue:
+    geoLocationPlace
+  EventSponsor:
+    FundingReference
+  eventSponsorName:
+    funderName
+  eventSponsorId:
+    funderIdentifier
+  eventSponsorIdScheme:
+    funderIdentifierType
+  eventRelatedEventId:
+    RelatedIdentifier  # RelatedIdentifier ?
+  eventRelationType:
+    relationType  # relationType ?
+  eventCommitteeMemberIdScheme:
+    funderIdentifierType
+  EventOtherId:
+    alternateIdentifier
+  eventOtherIdType:
+    alternateIdentifierType
+  EventPublication:
+    RelatedIdentifier  # RelatedIdentifier ?
+  EventLanguage:
+    Language
+  # Academic Event Series Properties
   SeriesId:
     Identifier
+  seriesIdURL:
+    Resource
   SeriesName:
     Title
+  seriesNameType:
+    titleType
+  SeriesPublication:
+    RelatedIdentifier  # RelatedIdentifier ?
+  SeriesOtherId:
+    alternateIdentifier
+  seriesOtherIdType:
+    alternateIdentifierType
+  SeriesSponsor:
+    FundingReference
+  seriesSponsorName:
+    funderName
+  seriesSponsorId:
+    funderIdentifier
+  seriesSponsorIdScheme:
+    funderIdentifierType
+  seriesRelationType:
+    relationType  # relationType ?
+  SeriesLanguage:
+    Language
