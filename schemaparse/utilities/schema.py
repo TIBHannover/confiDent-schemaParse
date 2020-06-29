@@ -1,4 +1,3 @@
-from pprint import pprint
 from urllib import request
 from schemaparse.parsers import datacite
 import schemaparse.globals as _globals

@@ -29,9 +29,7 @@ pprint(mapping_dict)
 ```
 
 ## TODO
-* make template more general purpose 
-    * How similar in DC MW template to other Schemas templates?
-    * no need to have Datacite hardcoded
+* mapping needs to be handled outside the datacide module
     
 # Application structure
 * `app.py`

@@ -26,7 +26,6 @@ def load_template(schema: str):
 
 
 def schema2mw(_schema):
-    s = f'Schema {_schema} will be turned to MW'
     template = load_template(_schema)
     uri, ns, ns_prefix, contenttype = readyaml.yaml_get_schemainfo(_schema)
     mapping = readyaml.yaml_get_schemamapping(_schema)
