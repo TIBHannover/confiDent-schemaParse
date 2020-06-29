@@ -1,15 +1,18 @@
+import re
 from typing import Dict
 from _collections import OrderedDict
 from lxml import etree
 import schemaparse.globals as _globals
 
+multiple_spaces_regex = re.compile(r'\s+', re.MULTILINE)
 
 def get_documentation(el, doc_xpath: str):
     documentation = ''
     for doc in el.findall(doc_xpath,
                           namespaces=_globals.schemainfo.ns_dict):
         documentation += doc.text
-    documentation = documentation.replace('\n\n', '')  # remove empty lines
+    # remove multiple empty space
+    documentation = re.sub(multiple_spaces_regex, ' ', documentation)
     return documentation
 
 

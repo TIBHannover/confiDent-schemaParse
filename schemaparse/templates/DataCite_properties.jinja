@@ -13,11 +13,10 @@
 |id=DataCite::{{ elements_dict[ element ]['name']|lower }}
 |name={{ elements_dict[ element ]['name']|title }}
 |kind={{ elements_dict[ element ]['kind'] }}
-|type=XSD:{{ elements_dict[ element ]['type'] }}
-{% if elements_dict[ element ]['parent'] %}|parent={{ elements_dict[ element ]['parent']|title }}{% endif %}
+|type=XSD:{{ elements_dict[ element ]['type'] }}{% if elements_dict[ element ]['parent'] %}
+|parent={{ elements_dict[ element ]['parent']|title }}{% endif %}
 |cardinality={{ elements_dict[ element ]['cardinality'] }}
-|definition={{ elements_dict[ element ]['definition'] }}
-{% for mapsto in elements_dict[ element ]['mapsTo'] %}
+|definition={{ elements_dict[ element ]['definition'] }}{% for mapsto in elements_dict[ element ]['mapsTo'] %}
 |mapsTo={{mapsto|safe}}{% endfor %}
 |schema=DataCite
 |storemode=subobject
