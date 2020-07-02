@@ -10,19 +10,19 @@ DataCite:
   EventId:
     Identifier
   eventIdURL:
-    Resource
+    Resource  # DataCite property URL exist but how to populate it via XML needs tbd
   EventName:
     Title
   eventNameType:
     titleType
-  SeriesId:
-    RelatedIdentifier  # RelatedIdentifier?
+#  EventSeriesId:        # this property will be dropped as the event->series relation will be  
+#    RelatedIdentifier   # modeled using EventRelation
   EventOrganizer:
-    EventOrganizer  # EventOrganizer?
+    Creator
   EventSubject:
     Subject
   EventLocation:
-    GeoLocation  # GeoLocation?
+    GeoLocation
   eventCoordinates:
     geoLocationPoint
   eventLongitude:
@@ -32,19 +32,27 @@ DataCite:
   eventVenue:
     geoLocationPlace
   EventSponsor:
-    FundingReference
+    Contributor
   eventSponsorName:
-    funderName
+    contributorName
   eventSponsorId:
-    funderIdentifier
+    nameIdentifier
   eventSponsorIdScheme:
-    funderIdentifierType
-  eventRelatedEventId:
-    RelatedIdentifier  # RelatedIdentifier ?
+    nameIdentifierScheme
+  eventRelatedId:
+    RelatedIdentifier
   eventRelationType:
-    relationType  # relationType ?
+    relationType
+  EventCommittee:
+    Contributor
+  eventCommitteeType:        # contributorType value must be ProjectMember if ConfIDent:eventCommitteeChair 
+    contributorType          # is false else it mus be ProjectLeader
+  eventCommitteeMemberName:
+    nameType
+  eventCommitteeMemberId:
+    nameIdentifier
   eventCommitteeMemberIdScheme:
-    funderIdentifierType
+    nameIdentifierScheme
   EventOtherId:
     alternateIdentifier
   eventOtherIdType:
